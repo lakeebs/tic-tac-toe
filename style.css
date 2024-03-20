@@ -1,0 +1,24 @@
+:root {
+  --font: sans-serif;
+  --mainColor: #000;
+  --secondaryColor: #ff0;
+  font-size: 16px;
+}
+
+::selection {
+  background-color: var(--mainColor);
+  color: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: var(--font);
+  height: 100vh;
+  line-height: 1.61;
+}
