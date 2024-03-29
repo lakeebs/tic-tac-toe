@@ -12,7 +12,7 @@ function gameBoard() {
       board[i].push(cell());
     }
   }
-  // Return the current state of the board
+  // Get the current state of the board
   const getBoard = () => board;
 
   // Add mark ('player' is the value (i.e. 1, 2))
@@ -53,6 +53,9 @@ function gameController() {
   // Set the board
   const board = gameBoard();
 
+  // Game status
+  let isGameOver = false;
+
   // Set the players
   const players = [
     {
@@ -67,15 +70,15 @@ function gameController() {
     }
   ];
 
-  // Set the scores (DOM side)
-  // const playerOneScore = document.querySelector('#scorebox .player-one');
-  // const playerTwoScore = document.querySelector('#scorebox .player-two');
-
-  // playerOneScore.textContent = players[0].score;
-  // playerTwoScore.textContent = players[1].score;
-
   // Set active player to player 1
   let activePlayer = players[0];
+
+  // Set the scores
+  const playerOneScore = document.querySelector('#scorebox .player-one .score');
+  const playerTwoScore = document.querySelector('#scorebox .player-two .score');
+
+  playerOneScore.textContent = players[0].score;
+  playerTwoScore.textContent = players[1].score;
 
   // Switch turns
   const switchPlayerTurn = () => {
@@ -86,7 +89,10 @@ function gameController() {
   // Update board after each turn
   const printNewRound = () => {
     board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`);
+
+    if (isGameOver == false) {
+      console.log(`${getActivePlayer().name}'s turn`);
+    }
   };
 
   // Play round
@@ -119,60 +125,124 @@ function gameController() {
     if (rowsMatching || columnsMatching || diagonalsMatching()) {
       board.printBoard();
       console.log(`${getActivePlayer().name} wins!`);
-      getActivePlayer().score++;
+      document.querySelector('.game-over').style.display = 'block';
+      document.querySelector('.game-over').textContent = `${getActivePlayer().name} wins!`
+
+      if (getActivePlayer().name == 'Player One') {
+        playerOneScore.textContent = ++getActivePlayer().score;
+      }
+
+      if (getActivePlayer().name == 'Player Two') {
+        playerTwoScore.textContent = ++getActivePlayer().score;
+      }
+      
       gameOver();
-      return;
     }
     
     if (isFullBoard && !(rowsMatching || columnsMatching || diagonalsMatching())) {
       console.log(`It's a draw!`);
+      document.querySelector('.game-over').style.display = 'block';
+      document.querySelector('.game-over').textContent = `It's a draw!`
       gameOver();
-      return;
     }
 
-    // Game over
-    function gameOver() {
-      console.log(`Game over! The score is now: ` + players[0].score + ` | ` + players[1].score);
-      reset();
+    if (isGameOver == false) {
+      switchPlayerTurn();
+      printNewRound();
     }
 
-    // Reset
-    const reset = () => {
-      board.getBoard().forEach(row => {
-        row.forEach(cell => {
-          cell.addValue(' '); // Clear cell value
-        });
-      });
-      printNewRound(); // Print new round
-    };
-
-    switchPlayerTurn();
-    printNewRound();
-  };
+  }; // End Play Round
 
   printNewRound();
+
+  // Game over
+  const resetBtn = document.querySelector('#messages .reset');
+  function gameOver() {
+    console.log(`Game over! The score is now: ` + players[0].score + ` | ` + players[1].score);
+    isGameOver = true;
+    document.querySelector('.turn').style.display = 'none';
+
+    // Reset button
+    resetBtn.style.display = 'block';
+    resetBtn.addEventListener('click', () => reset());
+  }
+
+  // Reset
+  const reset = () => {
+    board.getBoard().forEach(row => {
+      row.forEach(cell => {
+        cell.addValue(' ');
+      });
+    });
+    resetBtn.style.display = 'none';
+    document.querySelector('.game-over').style.display = 'none';
+    document.querySelector('.turn').style.display = 'block';
+    document.querySelectorAll('#board button').forEach(button => { button.textContent = ' ' });
+    activePlayer = players[0];
+    document.querySelector('.turn').textContent = `${activePlayer.name}'s turn`;
+    isGameOver = false;
+    printNewRound();
+  };
 
   return {
     playRound,
     getActivePlayer,
     getBoard: board.getBoard,
-    reset
+    getIsGameOver: () => isGameOver
   };
+} // End Game Controller
 
+function screenController() {
+
+  const game = gameController();
+  const playerTurnDiv = document.querySelector('.turn');
+  const boardDiv = document.querySelector('#board');
+  const board = game.getBoard();
+
+  const updateScreen = () => {
+    // Clear the board
+    boardDiv.textContent = ' ';
+
+    // Get the newest version of the board and player turn
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    // Display player's turn
+    playerTurnDiv.textContent = `${activePlayer.name}'s turn`
+    
+    // Render board squares
+    board.forEach((row, rowIndex) => {
+      row.forEach((cell, columnIndex) => {
+        const cellButton = document.createElement('button');
+        cellButton.classList.add('cell');
+        cellButton.dataset.column = columnIndex;
+        cellButton.dataset.row = rowIndex;
+        cellButton.textContent = cell.getValue();
+        boardDiv.appendChild(cellButton);
+      })
+    })
+  }
+
+  // Add event listener for the board
+  function clickHandlerBoard(e) {
+    const selectedColumn = e.target.dataset.column;
+    const selectedRow = e.target.dataset.row;
+    
+    if (!(selectedRow || selectedColumn) || game.getIsGameOver() == true || !isCellEmpty(selectedRow, selectedColumn)) return;
+    
+    game.playRound(selectedRow, selectedColumn);
+    updateScreen();
+  }
+  boardDiv.addEventListener('click', clickHandlerBoard);
+
+  function isCellEmpty(row, column) {
+    if (board[row][column].getValue() == ' ') {
+      return true;
+    }
+  }
+
+  // Initial render
+  updateScreen();
 }
 
-// Reset the game
-const resetGame = () => {
-  game.reset();
-};
-
-// Start the game
-const game = gameController();
-
-/* 
-
-Welcome to Tic Tac Toe! 
-Use game.playRound(row, column) to add a mark to the board. 
-First to get three-in-a-row wins! 
-
-*/
+screenController();

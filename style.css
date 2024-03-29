@@ -1,7 +1,7 @@
 :root {
   --font: sans-serif;
-  --mainColor: #000;
-  --secondaryColor: #ff0;
+  --mainColor: #f33737;
+  --secondaryColor: #fbebeb;
   font-size: 16px;
 }
 
@@ -21,4 +21,45 @@ html, body {
   font-family: var(--font);
   height: 100vh;
   line-height: 1.61;
+}
+
+a {
+  color: var(--mainColor);
+}
+
+button {
+  appearance: none;
+  cursor: pointer;
+}
+
+.container {
+  display: grid;
+  justify-content: center;
+  text-align: center;
+
+  #scorebox {
+    > div {
+      display: inline-block;
+    }
+  }
+
+  #board { 
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  
+    button {
+      background: none;
+      border: 1px solid var(--mainColor);
+      padding: 1rem;
+    }
+  }
+
+  #messages {
+    display: grid;
+    justify-content: center;
+    
+    .reset {
+      border: 1px solid var(--mainColor);
+    }
+  }
 }
