@@ -1,6 +1,6 @@
 :root {
   --font: sans-serif;
-  --mainColor: #f33737;
+  --mainColor: #000;
   --secondaryColor: #fbebeb;
   font-size: 16px;
 }
@@ -43,21 +43,26 @@ button {
     }
   }
 
-  #board { 
+  #board {
+    border: 1px solid var(--mainColor);
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
   
     button {
+      aspect-ratio: 1/1;
       background: none;
       border: 1px solid var(--mainColor);
+      font-size: 3rem;
+      line-height: 1;
+      min-width: 6rem;
       padding: 1rem;
+      width: 100%;
     }
   }
 
   #messages {
     display: grid;
     justify-content: center;
-    
+
     .reset {
       border: 1px solid var(--mainColor);
     }

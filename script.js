@@ -1,14 +1,13 @@
 // Game board
 function gameBoard() {
-  const rows = 3;
-  const columns = 3;
+  const grid = 4;
   const board = [];
 
-  for (let i = 0; i < rows; i++) {
-    // Create 3 empty arrays
+  for (let i = 0; i < grid; i++) {
+    // Create x empty arrays
     board[i] = [];
-    for (let j = 0; j < columns; j++) {
-      // Put 3 cells in each empty array
+    for (let j = 0; j < grid; j++) {
+      // Put x cells in each empty array
       board[i].push(cell());
     }
   }
@@ -32,7 +31,7 @@ function gameBoard() {
     console.log(cellValues);
 
   };
-  return { getBoard, addMark, printBoard };
+  return { getBoard, addMark, printBoard, grid };
 }
 
 // Cell 
@@ -198,6 +197,7 @@ function screenController() {
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('#board');
   const board = game.getBoard();
+  const grid = gameBoard().grid;
 
   const updateScreen = () => {
     // Clear the board
@@ -219,6 +219,7 @@ function screenController() {
         cellButton.dataset.row = rowIndex;
         cellButton.textContent = cell.getValue();
         boardDiv.appendChild(cellButton);
+        boardDiv.style.gridTemplateColumns = 'repeat(' + grid + ', 1fr)';
       })
     })
   }
