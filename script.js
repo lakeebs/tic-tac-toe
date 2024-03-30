@@ -1,6 +1,6 @@
 // Game board
 function gameBoard() {
-  const grid = 4;
+  const grid = 3;
   const board = [];
 
   for (let i = 0; i < grid; i++) {
@@ -59,12 +59,12 @@ function gameController() {
   const players = [
     {
       name: 'Player One',
-      value: '×',
+      value: '🞫',
       score: 0
     },
     {
       name: 'Player Two',
-      value: '○',
+      value: '🞅',
       score: 0
     }
   ];
@@ -104,9 +104,18 @@ function gameController() {
     const columnsMatching = board.getBoard().every(row => row[column].getValue() === getActivePlayer().value);
 
     const diagonalsMatching = () => {
+      const boardDiv = document.querySelector('#board');
       // Check main diagonal from top-left to bottom-right
       const mainDiagonal = board.getBoard().map((row, index) => row[index].getValue());
       if (mainDiagonal.every(value => value === getActivePlayer().value)) {
+        mainDiagonal.forEach((value, index) => {
+          const button = boardDiv.querySelector(`.cell[data-row="${index}"][data-column="${index}"]`);
+
+          if (value === getActivePlayer().value && button) {
+            button.classList.add('win');
+          }
+
+        });
         return true;
       }
   
@@ -128,13 +137,13 @@ function gameController() {
       document.querySelector('.game-over').textContent = `${getActivePlayer().name} wins!`
 
       if (getActivePlayer().name == 'Player One') {
-        playerOneScore.textContent = ++getActivePlayer().score;
+        playerOneScore.textContent = ++players[0].score;
       }
 
       if (getActivePlayer().name == 'Player Two') {
-        playerTwoScore.textContent = ++getActivePlayer().score;
+        playerTwoScore.textContent = ++players[1].score;
       }
-      
+
       gameOver();
     }
     
@@ -155,25 +164,23 @@ function gameController() {
   printNewRound();
 
   // Game over
-  const resetBtn = document.querySelector('#messages .reset');
+  const resetBtn = document.querySelector('.reset');
   function gameOver() {
     console.log(`Game over! The score is now: ` + players[0].score + ` | ` + players[1].score);
     isGameOver = true;
     document.querySelector('.turn').style.display = 'none';
-
-    // Reset button
-    resetBtn.style.display = 'block';
-    resetBtn.addEventListener('click', () => reset());
+    resetBtn.textContent = 'Play again?';
   }
 
   // Reset
+  resetBtn.addEventListener('click', () => reset());
   const reset = () => {
     board.getBoard().forEach(row => {
       row.forEach(cell => {
         cell.addValue(' ');
       });
     });
-    resetBtn.style.display = 'none';
+    resetBtn.textContent = 'Reset';
     document.querySelector('.game-over').style.display = 'none';
     document.querySelector('.turn').style.display = 'block';
     document.querySelectorAll('#board button').forEach(button => { button.textContent = ' ' });
@@ -197,17 +204,13 @@ function screenController() {
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('#board');
   const board = game.getBoard();
-  const grid = gameBoard().grid;
 
   const updateScreen = () => {
     // Clear the board
     boardDiv.textContent = ' ';
 
-    // Get the newest version of the board and player turn
-    const board = game.getBoard();
+    // Get/display player turn
     const activePlayer = game.getActivePlayer();
-
-    // Display player's turn
     playerTurnDiv.textContent = `${activePlayer.name}'s turn`
     
     // Render board squares
@@ -219,7 +222,6 @@ function screenController() {
         cellButton.dataset.row = rowIndex;
         cellButton.textContent = cell.getValue();
         boardDiv.appendChild(cellButton);
-        boardDiv.style.gridTemplateColumns = 'repeat(' + grid + ', 1fr)';
       })
     })
   }
@@ -247,3 +249,13 @@ function screenController() {
 }
 
 screenController();
+
+/* 
+Future features
+
+bug: class not being added on line 115
+3 in a row
+AI
+hover
+4 grid
+*/

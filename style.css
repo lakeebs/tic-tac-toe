@@ -1,6 +1,6 @@
 :root {
-  --font: sans-serif;
-  --mainColor: #000;
+  --font: 'Space Grotesk', sans-serif;
+  --mainColor: #f33737;
   --secondaryColor: #fbebeb;
   font-size: 16px;
 }
@@ -27,34 +27,53 @@ a {
   color: var(--mainColor);
 }
 
+h1 {
+  margin-top: 1rem;
+  text-transform: uppercase;
+}
+
 button {
   appearance: none;
+  background: var(--mainColor);
+  border: 0;
+  border-radius: 3px;
+  color: #fff;
   cursor: pointer;
+  font-family: var(--font);
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .container {
   display: grid;
   justify-content: center;
+  gap: 1rem;
   text-align: center;
 
   #scorebox {
+    display: grid;
+    grid-auto-flow: column;
+
     > div {
       display: inline-block;
+
+      span {
+        font-weight:bold;
+      }
     }
   }
 
   #board {
-    border: 1px solid var(--mainColor);
     display: grid;
+    gap: .2rem;
+    grid-template-columns: repeat(3, 1fr);
   
     button {
       aspect-ratio: 1/1;
-      background: none;
-      border: 1px solid var(--mainColor);
-      font-size: 3rem;
+      font-size: 4rem;
       line-height: 1;
       min-width: 6rem;
-      padding: 1rem;
+      padding: 6px 3px 0 0;
       width: 100%;
     }
   }
@@ -62,9 +81,9 @@ button {
   #messages {
     display: grid;
     justify-content: center;
+  }
 
-    .reset {
-      border: 1px solid var(--mainColor);
-    }
+  .reset {
+    padding: .5rem;
   }
 }
